@@ -12,7 +12,7 @@ export SPACES_ACCESS_KEY_ID=key
 export SPACES_SECRET_ACCESS_KEY=secret
 ```
 
-Then `cd cluster/ && terraform apply` to create a DO k8s cluster
+Then `cd cluster/ && terraform init && terraform apply` to create a DO k8s cluster
 
 ## Resources Instalattion
 
@@ -74,7 +74,7 @@ Graylog is the last resource we need to create but before we need a secret conta
 ```
 elastic_password=$(kubectl get secret elasticsearch-es-elastic-user -o go-template='{{.data.elastic | base64decode}}') \
 mongo_uri=$(kubectl get secret mongodb-graylog-mongodb -o json | jq -r '.data | ."connectionString.standardSrv"'|base64 -d) && \
-kubectl create secret generic graylog-env-test \
+kubectl create secret generic graylog-env \
 --from-literal=GRAYLOG_PASSWORD_SECRET=$(pwgen -N 1 -s 96) \
 --from-literal=GRAYLOG_ROOT_PASSWORD_SHA2="echo -n '<GRAYLOG_UI_PASSWORD>'| sha256sum| awk '{print $1}'" \
 --from-literal=GRAYLOG_ELASTICSEARCH_HOSTS=http://elastic:$elastic_password@elasticsearch-es-default-0.elasticsearch-es-default:9200 \
