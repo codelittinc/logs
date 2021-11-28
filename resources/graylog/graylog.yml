@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+  generation: 8
+  labels:
+    service: graylog
+  name: graylog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: graylog
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        service: graylog
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: graylog-env
+          image: graylog/graylog:4.2.1
+          imagePullPolicy: IfNotPresent
+          name: graylog
+          ports:
+            - containerPort: 9000
+            - containerPort: 12201
+          livenessProbe:
+            httpGet:
+              path: /api/system/lbstatus
+              port: 9000
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: graylog
+  labels:
+    service: graylog
+spec:
+  type: LoadBalancer
+  selector:
+    service: graylog
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9000
+      name: ui
+    - protocol: TCP
+      port: 12201
+      targetPort: 12201
+      name: gelf
+
+
