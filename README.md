@@ -14,6 +14,11 @@ export SPACES_SECRET_ACCESS_KEY=secret
 
 Then `cd cluster/ && terraform init && terraform apply` to create a DO k8s cluster
 
+Export the generate kubeconfig file to access the cluster with `kubectl`.
+```
+export KUBECONFIG=~/.kube/config.do.graylog
+```
+
 ## Resources Instalattion
 
 The resources should be installed in the following order:
@@ -93,6 +98,10 @@ service/graylog   LoadBalancer   10.245.223.18   144.126.250.6   80:30951/TCP,12
 ```
 
 Use the service `EXTERNAL-IP` to access graylog's UI: https://144.126.250.6
+
+#### Graylog Inputs
+
+If you need to add an input that listens on a port different then `12201`, make sure to edit `graylog/graylog.yml` and add the new port to the deployment and service specs.
 
 ## Local Setup
 
