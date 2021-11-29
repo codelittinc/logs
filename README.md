@@ -72,6 +72,19 @@ NAME      PHASE     VERSION
 mongodb   Running   4.2.6
 ```
 
+### Ingress and Cert Manager
+
+First create the ingress resources:
+
+```
+kubectl apply -f resources/ingress/ingress.yml
+```
+
+Then Cert Manager
+```
+kubectl apply -f resources/ingress/certmanager.yml
+```
+
 ### Graylog
 
 Graylog is the last resource we need to create but before we need a secret containing graylog's environment variables:
@@ -91,17 +104,19 @@ Then `kubectl apply resources/graylog/graylog.yml`
 ```
 kubectl get deploy,svc -l service=graylog
 NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/graylog   1/1     1            1           58m
+deployment.apps/graylog   1/1     1            1           21h
 
-NAME              TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                        AGE
-service/graylog   LoadBalancer   10.245.223.18   144.126.250.6   80:30951/TCP,12201:30321/TCP   58m
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)            AGE
+service/graylog   ClusterIP   10.245.226.213   <none>        80/TCP,12201/TCP   126m
 ```
 
-Use the service `EXTERNAL-IP` to access graylog's UI: https://144.126.250.6
+You'll be able to connect to the UI in `https://beta.logs.codelitt.dev/`
+
+There's an HTTP gelf input endpoint in `https://beta.logs.codelitt.dev/gelf`
 
 #### Graylog Inputs
 
-If you need to add an input that listens on a port different then `12201`, make sure to edit `graylog/graylog.yml` and add the new port to the deployment and service specs.
+If you need to add an input that listens on a port different then `12201`, make sure to edit `graylog/graylog.yml` and add the new port to the deployment,service and ingress specs.
 
 ## Local Setup
 
